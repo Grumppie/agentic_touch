@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, IBM_Plex_Mono, Inter } from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs'
 import{
   dark
 } from '@clerk/themes'
-import { Button } from "@/components/ui/button";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({
   variable: "--font-inter-sans",
@@ -48,28 +42,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${plexMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute={"class"}
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <header>
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton>
-                <Button className="bg-amber-200 text-amber-700 p-2 rounded">
-                  Sign Up
-                </Button>
-              </SignUpButton>
-            </SignedOut>
-
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
+        <Providers>
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
     </ClerkProvider>
