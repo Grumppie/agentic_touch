@@ -25,7 +25,7 @@ const Navbar = ({
 }) => {
     const project = useProject(projectId)
 
-    const renameProject = useRenameProject(projectId)
+    const renameProject = useRenameProject()
 
     const [name, setName] = useState<string>()
     const [isRenaming,setIsRenaming] = useState<boolean>(false)
