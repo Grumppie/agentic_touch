@@ -43,7 +43,7 @@ const ContinueCard = ({
     return(
         <div className="flex flex-col gap-2">
             <span className="text-xs text-muted-foreground">
-                Last Upadted
+                Last Updated
             </span>
             <Button 
                 variant={"outline"}
