@@ -40,19 +40,19 @@ export const useProject=(projectId: Id<"projects">)=>{
 }
 
 
-export const useRenameProject=(projectId: Id<"projects">)=>{
+export const useRenameProject=()=>{
     return useMutation(api.projects.rename).withOptimisticUpdate(
         (localstore, args)=>{
             const existingProject = localstore.getQuery(
                 api.projects.getById,
                 {
-                    id: projectId
+                    id: args.id
                 }
             )
             if(existingProject != null ){
                 localstore.setQuery(
                     api.projects.getById,
-                    {id:projectId},
+                    {id:args.id},
                     {
                         ...existingProject,
                         name: args.newName,
