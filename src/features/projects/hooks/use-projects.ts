@@ -14,7 +14,6 @@ export const useProjectsPartial=(limit:number)=>{
 }
 
 export const useCreateProjects=()=>{
-    const {userId} = useAuth()
     return useMutation(api.projects.create).withOptimisticUpdate(
         (localstore, args)=>{
             const existingProjects = localstore.getQuery(api.projects.get)
@@ -31,6 +30,49 @@ export const useCreateProjects=()=>{
                     newProject,
                     ...existingProjects
                 ])
+            }
+        }
+    )
+}
+
+export const useProject=(projectId: Id<"projects">)=>{
+    return useQuery(api.projects.getById, {id: projectId})
+}
+
+
+export const useRenameProject=(projectId: Id<"projects">)=>{
+    return useMutation(api.projects.rename).withOptimisticUpdate(
+        (localstore, args)=>{
+            const existingProject = localstore.getQuery(
+                api.projects.getById,
+                {
+                    id: projectId
+                }
+            )
+            if(existingProject != null ){
+                localstore.setQuery(
+                    api.projects.getById,
+                    {id:projectId},
+                    {
+                        ...existingProject,
+                        name: args.newName,
+                        updatedAt: Date.now()
+                    }
+                )
+            }
+
+            const existingProjects = localstore.getQuery(api.projects.get)
+            if(existingProjects != null){
+                localstore.setQuery(
+                    api.projects.get,
+                    {},
+                    existingProjects.map((project)=>{
+                        return project._id === args.id?{
+                            ...project,
+                            name: args.newName,
+                            updatedAt: Date.now()
+                        }: project
+                    }))
             }
         }
     )
