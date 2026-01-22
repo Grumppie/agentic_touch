@@ -95,7 +95,7 @@ export const useEditorStore = createEditorStore ((set,get)=>({
         }
 
         // case 3: File already Open: just activate and pin if double-clicked
-        const shouldPin = pinned && previewTabId 
+        const shouldPin = pinned && previewTabId == fileId
         tabs.set(projectId,{
             ...state,
             activeTabId: fileId,
