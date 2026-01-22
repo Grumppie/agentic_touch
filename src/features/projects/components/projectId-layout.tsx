@@ -19,7 +19,7 @@ export const ProjectIdLayout = ({
     projectId: Id<"projects">
 })=>{
     return(
-        <div className="w-full h-screen flex flex-col">
+        <div className="w-full h-screen flex flex-col ">
             <Navbar projectId={projectId} />
             <div className="flex-1 flex overflow-hidden">
                 <Allotment
