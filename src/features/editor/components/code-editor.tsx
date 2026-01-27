@@ -7,6 +7,7 @@ import {indentWithTab} from '@codemirror/commands'
 import { MiniMap } from '../extensions/minimap'
 import {indentationMarkers} from '@replit/codemirror-indentation-markers'
 import { customSetup } from '../extensions/custom-setup'
+import { suggestion } from '../extensions/suggestion'
 
 interface props{
     fileName: string,
@@ -29,6 +30,7 @@ const CodeEditor = ({fileName, onChange, initialValue = ""}: props) => {
             extensions: [
                 customSetup,
                 languageExtension,
+                suggestion(fileName),
                 oneDark,
                 customTheme,
                 keymap.of([indentWithTab]),

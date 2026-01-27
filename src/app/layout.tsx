@@ -8,6 +8,7 @@ import{
   dark
 } from '@clerk/themes'
 import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Toaster theme="dark" />
         </Providers>
       </body>
     </html>
