@@ -59,7 +59,7 @@ const TopNavigation = ({projectId}:{projectId: Id<"projects">}) => {
                         }
                     }}
                     className={cn(
-                        "padding-0.5 rounded-sm hover:bg-white/10 opacity-0 group-hover:group-hover:opacity-100",
+                        "p-0.5 rounded-sm hover:bg-white/10 opacity-0 group-hover:group-hover:opacity-100",
                         isActive && "opacity-100"
                     )}
                 >

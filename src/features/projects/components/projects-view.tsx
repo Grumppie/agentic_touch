@@ -37,6 +37,22 @@ export const ProjectsView = ()=>{
                     e.preventDefault()
                     setCommandDialogOpen(true)
                 }
+                if(e.key === "j" || e.key === "J"){
+                    e.preventDefault()
+                    const projectName = uniqueNamesGenerator({
+                        dictionaries:[ 
+                            adjectives,
+                            colors,
+                            animals
+                        ],
+                        separator: "-",
+                        length: 3
+                    })
+
+                    createProject({
+                        name: projectName
+                    })
+                }
                 
             }
         }
