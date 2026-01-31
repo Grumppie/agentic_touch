@@ -44,7 +44,7 @@ let debounceTimer: number | null = null
 let isWaitingSuggestion = false
 const DEBOUNCE_DELAY = 300
 
-let currentAbortController: AbortController | null = null
+export let currentAbortController: AbortController | null = null
 
 const generatePayload = (view: EditorView, fileName: string)=>{
 
@@ -106,6 +106,9 @@ const DeboucePlugin = (fileName: string)=>{
         }
 
         triggerSuggesion(view:EditorView){
+
+
+
             if(debounceTimer != null){
                 clearTimeout(debounceTimer)
             }

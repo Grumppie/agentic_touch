@@ -8,6 +8,7 @@ import z from "zod";
 const suggestionSchema = z.object({
     suggestion: z.string().describe("Ai generated suggestion based on the current cursor context. empty string if no suggestion")
 })
+
 const SUGGESTION_PROMPT = `You are a code suggestion assistant.
 
 <context>
@@ -27,35 +28,15 @@ const SUGGESTION_PROMPT = `You are a code suggestion assistant.
 </context>
 
 <instructions>
-Follow these steps IN ORDER and do NOT skip steps.
+Follow these steps IN ORDER:
 
-1. Examine next_lines.
-   Return an empty string ONLY if next_lines clearly completes
-   the SAME syntactic construct started at the cursor position.
-   Examples of completion:
-   - Closing braces or parentheses for the same block
-   - Continuation of the same statement
+1. First, look at next_lines. If next_lines contains ANY code, check if it continues from where the cursor is. If it does, return empty string immediately - the code is already written.
 
-   DO NOT treat next_lines as completion if it:
-   - Starts a new declaration (interface, type, const, function, class, import)
-   - Is unrelated top-level code
-   - Only contains closing braces for a surrounding scope
+2. Check if before_cursor ends with a complete statement (;, }, )). If yes, return empty string.
 
-   If the cursor line is incomplete, you MUST allow a suggestion.
+3. Only if steps 1 and 2 don't apply: suggest what should be typed at the cursor position, using context from full_code.
 
-2. Check before_cursor.
-   If it ends with a complete statement such as:
-   ";", "}", ")", "]"
-   return an empty string.
-
-3. If steps 1 and 2 do not apply, suggest what should be typed
-   at the cursor position using context from full_code.
-
-Rules:
-- The suggestion is inserted immediately after the cursor.
-- Do NOT repeat text already present in the file.
-- Prefer minimal, syntactically valid completions.
-- Return ONLY the suggested code, nothing else.
+Your suggestion is inserted immediately after the cursor, so never suggest code that's already in the file.
 </instructions>`;
 
 
@@ -96,7 +77,6 @@ export async function POST(request: Request){
             .replace("{nextLines}",nextLines || "")
             .replace("{lineNumber}",lineNumber.toString())
 
-        console.log("prompt",prompt)
 
         const {output} = await generateText({
             model: openai("gpt-4.1-mini"),
@@ -104,7 +84,6 @@ export async function POST(request: Request){
             prompt
         })
 
-        console.log("ai output:", output)
 
         return NextResponse.json({
             suggestion: output.suggestion

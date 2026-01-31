@@ -1,4 +1,7 @@
+import { firecrawl } from "@/lib/firecrawl";
+import { openai } from "@ai-sdk/openai";
 import { auth } from "@clerk/nextjs/server";
+import { generateText, Output } from "ai";
 import { NextResponse } from "next/server";
 import z from "zod";
 
@@ -82,11 +85,58 @@ export async function POST(request: Request){
             )
         }
 
-        
-        
+        const urls: string[] = instruction.match(URL_REGEX) || []
+        let context = ""
+        if(urls.length > 0){
 
+            const scrapedDocs = await Promise.all(
+                urls.map(async(url)=>{
+                    try{
+                        const scrapedDoc = await firecrawl.scrape(url,{
+                            formats: ["markdown"]
+                        })
+                        if(scrapedDoc.markdown){
+                            return `<doc url=${url}> ${scrapedDoc.markdown} </doc>`
+                        }
+                        return null
+                    }
+                    catch{
+                        return null
+                    }
+                })
+            )
+
+            const validResult = scrapedDocs.filter(Boolean)
+
+            if(validResult.length>0){
+                context = `<documentation>\n${scrapedDocs.join("\n\n")}\n</documentation>`
+            }
+        }
+        
+        
+        const prompt = QUICK_EDIT_PROMPT
+            .replace("{selectedCode}", selectedCode)
+            .replace("{fullCode}", fullCode || "")
+            .replace("{instruction}", instruction)
+            .replace("{documentation}", context)
+
+        const {output} = await generateText({
+            model: openai("gpt-4.1-mini"),
+            output: Output.object({schema: quickEditSchema}),
+            prompt
+        })
+
+        return NextResponse.json({editedCode: output.editedCode},{status: 200})
     }
     catch(e){
-        
+        console.error(`Error while editing code: ${e}`)
+        return NextResponse.json(
+            {
+                error: `Error while generating edited code: ${e}`,
+            },
+            {
+                status: 500
+            }
+        )
     }
 }
